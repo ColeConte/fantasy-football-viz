@@ -2,7 +2,7 @@
 #Helpful Resource That Also Has ESPN Connection Info: 
 #https://dusty-turner.netlify.app/post/espn-yahoo-api-navigation/
 
-# Setup the environment
+# Set up the environment
 setwd("~/Documents/GitHub/fantasy-football-viz")
 
 initialSetup <- function(){
