@@ -3,8 +3,7 @@
 #https://dusty-turner.netlify.app/post/espn-yahoo-api-navigation/
 
 # Setup the environment
-library(XML)
-library(httpuv)
+setwd("~/Documents/GitHub/fantasy-football-viz")
 
 initialSetup <- function(){
   #Run this function when you're first connecting to the API. Otherwise the credentials should be saved already.
@@ -29,22 +28,21 @@ initialSetup <- function(){
 
 getGameKey <- function(yahooToken){
   #Get Game Key: Game key is not saved to Fantasy.Rdata because it may change
-  game_page = GET("https://fantasysports.yahooapis.com/fantasy/v2/game/nfl",
-                  add_headers(Authorization=paste0("Bearer ", yahoo_token$access_token)))
-  XMLgame   = content(game_page, as="parsed", encoding="utf-8")
-  gameDoc   = xmlTreeParse(XMLgame, useInternal=TRUE)
-  gameList  = xmlToList(xmlRoot(gameDoc))
+  game_page = httr::GET("https://fantasysports.yahooapis.com/fantasy/v2/game/nfl",httr::add_headers(Authorization=paste0("Bearer ", yahoo_token$access_token)))
+  XMLgame   = httr::content(game_page, as="parsed", encoding="utf-8")
+  gameDoc   = XML::xmlTreeParse(XMLgame, useInternal=TRUE)
+  gameList  = XML::xmlToList(XML::xmlRoot(gameDoc))
   gameKey   = gameList$game$game_key
 }
 
 requestAPI <- function(baseURL,leagueID,tag,gameKey){
   #Send a GET request to the Yahoo Fantasy API
   requestURL  = paste0(baseURL,gameKey,".l.",leagueID,tag)
-  requestPage = GET(requestURL, add_headers(Authorization = paste0("Bearer ", yahoo_token$access_token)))
-  XMLrequest  = content(requestPage, as = "parsed", encoding = "utf-8")
+  requestPage = httr::GET(requestURL, httr::add_headers(Authorization = paste0("Bearer ", yahoo_token$access_token)))
+  XMLrequest  = httr::content(requestPage, as = "parsed", encoding = "utf-8")
   
-  requestDoc  = xmlTreeParse(XMLrequest, useInternal = TRUE)
-  requestList = xmlToList(xmlRoot(requestDoc))
+  requestDoc  = XML::xmlTreeParse(XMLrequest, useInternal = TRUE)
+  requestList = XML::xmlToList(XML::xmlRoot(requestDoc))
   return(requestList)
 }
 
