@@ -1,35 +1,29 @@
 #ESPN Fantasy API Connection
-#Some API Info: https://github.com/mkreiser/ESPN-Fantasy-Football-API
-#A Resource to Peruse: https://www.reddit.com/r/fantasyfootball/comments/d6uf1p/espn_v3_api_endpoints/
+#Info on other endpoints: https://www.reddit.com/r/fantasyfootball/comments/d6uf1p/espn_v3_api_endpoints/
+#Correctly formatting cookies: https://dusty-turner.netlify.app/post/espn-fantasy-football-v3-api-for-private-leagues-an-r-solution-finally/
 
 # Set up the environment
 setwd("~/Documents/GitHub/fantasy-football-viz")
 
-getLeagueInfo <- function(){
-  #Get league data: not sure why the blob is not giving back JSON
-  
-  #Load league ID and build request url
-  baseurl = "http://games.espn.com/ffl/api/v2/leagueSettings?leagueId="
-  leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
-  url = paste0(baseurl, leagueID, "&seasonId=",format(Sys.Date(), "%Y"))
-  
-  #Get ESPN blob
-  leagueGet = httr::GET(url)
-  leagueRaw = rawToChar(ESPNGet$content)
-  #league = jsonlite::fromJSON(ESPNRaw)
-  #return(league)
-}
-
-getPlayersData <- function(){
+getPlayersData <- function(leagueID,isPublic){
   #Access Players API endpoint
-  url = paste0("http://fantasy.espn.com/apis/v3/games/ffl/seasons/",format(Sys.Date(), "%Y"),"/players?scoringPeriodId=0&view=players_wl")
-  playersGet = httr::GET(url)
+  url  = paste0("http://fantasy.espn.com/apis/v3/games/ffl/seasons/",format(Sys.Date(), "%Y"),"/segments/0/leagues/",leagueID,"?view=kona_player_info")
+  if(isPublic){
+    playersGet = httr::GET(url)
+  }
+  else{
+    #Use saved cookies (espnCookies.txt) to log in
+    #Get cookies from Chrome->Settings->Cookies and Other Site Data, under ESPN
+    cookies = c(`swid` = readLines("espnCookies.txt", warn=FALSE)[1],
+                 `espn_s2` =  readLines("espnCookies.txt", warn=FALSE)[2] )
+    cookie = paste(names(cookies), cookies, sep = "=", collapse = ";")
+    playersGet = httr::GET(url = url, config = httr::config(cookie = cookie))
+  }
   playersRaw = rawToChar(playersGet$content)
   players = jsonlite::fromJSON(playersRaw)
   return(players)
 }
 
-
-
-playersDf = getPlayersData()
-
+leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
+leaguePlayers = getPlayersData(leagueID,FALSE)
+playersDf = leaguePlayers$players
