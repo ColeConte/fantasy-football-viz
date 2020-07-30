@@ -1,10 +1,11 @@
 #Cole Conte
 #Fantasy Football Draft Interface
 
-library(shinydashboard)
 
 #Set up the environment
 setwd("~/Documents/GitHub/fantasy-football-viz")
+library(shinydashboard)
+library(shiny)
 source("espnFantasyApi.R")
 
 ui = dashboardPage(
@@ -19,7 +20,7 @@ ui = dashboardPage(
     tabItems(
       tabItem(tabName = "DraftBoard",
               h2("Draft Board"),
-              DT::dataTableOutput("draftBoard")
+              DT::DTOutput("draftBoard")
               #fluidRow(
                # column(width=12,plotlyOutput("aaPlot"))
               #),
@@ -39,9 +40,7 @@ server <- function(input,output){
   
   #Display player names and injury status in a dynamic table
   nameInj = playersDf[c("fullName","injured")]
-  output$draftBoard = DT::renderDataTable({
-    nameInj
-  })
+  output$draftBoard = DT::renderDT(nameInj, filter="top")
 }
 
-shiny::shinyApp(ui,server)
+shinyApp(ui,server)
