@@ -24,6 +24,8 @@ getPlayersData <- function(leagueID,isPublic){
   return(players)
 }
 
-leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
-leaguePlayers = getPlayersData(leagueID,FALSE)
-playersDf = leaguePlayers$players
+#Example Use of API: Get All Player Names and Injury Status
+# leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
+# leaguePlayers = getPlayersData(leagueID,FALSE)
+# playersDf = leaguePlayers$players$player
+# playerMajorCats = playersDf[c("fullName","injured")]

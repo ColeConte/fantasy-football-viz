@@ -1,12 +1,11 @@
 #Cole Conte
 #Fantasy Football Draft Interface
 
-library(shiny)
 library(shinydashboard)
-library(ggplot2)
-library(plotly)
-#setwd("Documents/GitHub/fantasy-football-viz")
-#inv = read.csv("investments.csv")
+
+#Set up the environment
+setwd("~/Documents/GitHub/fantasy-football-viz")
+source("espnFantasyApi.R")
 
 ui = dashboardPage(
   dashboardHeader(),
@@ -19,7 +18,8 @@ ui = dashboardPage(
   dashboardBody(
     tabItems(
       tabItem(tabName = "DraftBoard",
-              h2("Draft Board")
+              h2("Draft Board"),
+              DT::dataTableOutput("draftBoard")
               #fluidRow(
                # column(width=12,plotlyOutput("aaPlot"))
               #),
@@ -32,13 +32,16 @@ ui = dashboardPage(
 )
 
 server <- function(input,output){
-  #output$aaPlot = renderPlotly({
-   # ggplotly(
-    #  ggplot(inv,aes(x=Asset.Class,y=Current,fill=Asset.Class))+
-     #   geom_col()+
-      #  labs(title="Asset Allocation",xlab=element_blank())
-    #)
-  #})
+  #Connect to ESPN API 
+  leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
+  leaguePlayers = getPlayersData(leagueID,FALSE)
+  playersDf = leaguePlayers$players$player
+  
+  #Display player names and injury status in a dynamic table
+  nameInj = playersDf[c("fullName","injured")]
+  output$draftBoard = DT::renderDataTable({
+    nameInj
+  })
 }
 
-shinyApp(ui,server)
+shiny::shinyApp(ui,server)
