@@ -7,6 +7,7 @@ setwd("~/Documents/GitHub/fantasy-football-viz")
 library(shinydashboard)
 library(shiny)
 source("espnFantasyApi.R")
+source("dataDecoding.R")
 
 ui = dashboardPage(
   dashboardHeader(),
@@ -38,9 +39,9 @@ server <- function(input,output){
   leaguePlayers = getPlayersData(leagueID,FALSE)
   playersDf = leaguePlayers$players$player
   
-  #Display player names and injury status in a dynamic table
-  nameInj = playersDf[c("fullName","injured")]
-  output$draftBoard = DT::renderDT(nameInj, filter="top")
+  #Display player names and positions in a dynamic table
+  namePos = getPlayerPos(playersDf)
+  output$draftBoard = DT::renderDT(namePos, filter="top")
 }
 
 shinyApp(ui,server)
