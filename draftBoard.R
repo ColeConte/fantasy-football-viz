@@ -8,6 +8,7 @@ library(shinydashboard)
 library(shiny)
 source("espnFantasyApi.R")
 source("dataDecoding.R")
+source("getters.R")
 
 ui = dashboardPage(
   dashboardHeader(),
@@ -40,8 +41,10 @@ server <- function(input,output){
   playersDf = leaguePlayers$players$player
   
   #Display player names and positions in a dynamic table
-  namePos = getPlayerPos(playersDf)
-  output$draftBoard = DT::renderDT(namePos, filter="top")
+  pos = getPlayerPos(playersDf)
+  pos$projection = sapply(pos$id,getPlayerProjections,playersDf=playersDf)
+  pos$adp = sapply(pos$id,getADP,playersDf=playersDf)
+  output$draftBoard = DT::renderDT(pos, filter="top")
 }
 
 shinyApp(ui,server)

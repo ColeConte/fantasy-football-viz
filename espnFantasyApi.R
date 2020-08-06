@@ -1,3 +1,4 @@
+#espnFantasyApi.R
 #ESPN Fantasy API Connection
 #Info on other endpoints: https://www.reddit.com/r/fantasyfootball/comments/d6uf1p/espn_v3_api_endpoints/
 #Correctly formatting cookies: https://dusty-turner.netlify.app/post/espn-fantasy-football-v3-api-for-private-leagues-an-r-solution-finally/
@@ -24,8 +25,9 @@ getPlayersData <- function(leagueID,isPublic){
   return(players)
 }
 
-#Example Use of API: Get All Player Names and Injury Status
-# leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
-# leaguePlayers = getPlayersData(leagueID,FALSE)
-# playersDf = leaguePlayers$players$player
-# playerMajorCats = playersDf[c("fullName","injured")]
+
+
+#Example Use of API
+#leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
+#leaguePlayers = getPlayersData(leagueID,FALSE)
+#playersDf = leaguePlayers$players$player
