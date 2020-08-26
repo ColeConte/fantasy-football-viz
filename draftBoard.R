@@ -9,6 +9,7 @@ library(shiny)
 source("espnFantasyApi.R")
 source("dataDecoding.R")
 source("getters.R")
+source("vorp.R")
 
 ui = dashboardPage(
   dashboardHeader(),
@@ -44,7 +45,9 @@ server <- function(input,output){
   pos = getPlayerPos(playersDf)
   pos$projection = sapply(pos$id,getPlayerProjections,playersDf=playersDf)
   pos$adp = sapply(pos$id,getADP,playersDf=playersDf)
-  output$draftBoard = DT::renderDT(pos, filter="top")
+  replVals = calculateReplacementValues(pos)
+  pos$vorp = apply(pos,1,calculateVorp,replacementValues=replVals)
+  output$draftBoard = DT::renderDT(pos[,-1], filter="top")
 }
 
 shinyApp(ui,server)
