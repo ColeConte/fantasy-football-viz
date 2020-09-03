@@ -6,9 +6,10 @@
 setwd("~/Documents/GitHub/fantasy-football-viz")
 library(shinydashboard)
 library(shiny)
-source("espnFantasyApi.R")
-source("dataDecoding.R")
-source("getters.R")
+#source("espnFantasyApi.R")
+#source("dataDecoding.R")
+#source("getters.R")
+source("fantasyProsScrape.R")
 source("vorp.R")
 
 ui = dashboardPage(
@@ -37,17 +38,19 @@ ui = dashboardPage(
 
 server <- function(input,output){
   #Connect to ESPN API 
-  leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
-  leaguePlayers = getPlayersData(leagueID,FALSE)
-  playersDf = leaguePlayers$players$player
+  #leagueID = readLines("leagueIds.txt", warn=FALSE)[3]
+  #leaguePlayers = getPlayersData(leagueID,FALSE)
+  #playersDf = leaguePlayers$players$player
   
   #Display player names and positions in a dynamic table
-  pos = getPlayerPos(playersDf)
-  pos$projection = sapply(pos$id,getPlayerProjections,playersDf=playersDf)
-  pos$adp = sapply(pos$id,getADP,playersDf=playersDf)
-  replVals = calculateReplacementValues(pos)
-  pos$vorp = apply(pos,1,calculateVorp,replacementValues=replVals)
-  output$draftBoard = DT::renderDT(pos[,-1], filter="top")
+  playerProj = scrapeProjections()
+  playerProj = playerProj["FPTS" > 50.0]
+  #pos = getPlayerPos(playersDf)
+  #pos$projection = sapply(pos$id,getPlayerProjections,playersDf=playersDf)
+  #pos$adp = sapply(pos$id,getADP,playersDf=playersDf)
+  #replVals = calculateReplacementValues(pos)
+  #pos$vorp = apply(pos,1,calculateVorp,replacementValues=replVals)
+  output$draftBoard = DT::renderDT(playerProj, filter="top")
 }
 
 shinyApp(ui,server)
