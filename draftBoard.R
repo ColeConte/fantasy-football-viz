@@ -36,6 +36,7 @@ ui = dashboardPage(
 server <- function(input,output){
   #Display player names and positions in a dynamic table
   playerProj = scrapeProjections()
+  #Remove irrelevant players
   playerProj = playerProj["FPTS" > 50.0]
   replVals = calculateReplacementValues(playerProj)
   playerProj$vorp = apply(playerProj,1,calculateVorp,replacementValues=replVals)
