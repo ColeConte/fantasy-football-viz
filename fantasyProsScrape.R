@@ -2,6 +2,18 @@
 
 library("XML")
 library("RCurl")
+library("stringr")
+
+getADP <- function(){
+  #Get yahoo half ppr adps
+  adpHTML = getURL("https://www.fantasypros.com/nfl/adp/half-point-ppr-overall.php")
+  adp = readHTMLTable(adpHTML,asText=T,stringsAsFactors=F)$data
+  adp[,c(1,4:ncol(adp))] = sapply(adp[, c(1,4:ncol(adp))], as.numeric)
+  names(adp)[names(adp)=="Player Team (Bye)"] = "Player"
+  adp["Player"] = sapply(adp["Player"], function(x) str_replace(x," \\(\\d{1,2}\\)",""))
+  adp["Player"] = sapply(adp["Player"], function(x) str_replace(x," DST",""))
+  return(adp)
+}
 
 scrapeProjections <- function(){
   #Do the scraping
@@ -42,8 +54,16 @@ scrapeProjections <- function(){
   K = customProjections(K,"K")
   DST = customProjections(DST,"DST")
   
-  #Combine players into 
+  #Combine players into one dataframe
   outputDF = rbind(QB[,c("Player","Pos","FPTS")],RB[,c("Player","Pos","FPTS")],WR[,c("Player","Pos","FPTS")],TE[,c("Player","Pos","FPTS")],DST[,c("Player","Pos","FPTS")],K[,c("Player","Pos","FPTS")])
+  
+  #Add ons:
+  #Add ADP
+  adps = getADP()
+  adps = adps[,c("Rank","Player")]
+  #Some values not merging: did a left outer join to keep all players.
+  #FP list only goes for first 383. Didn't look like anyone else major was missing.
+  outputDF = merge(outputDF,adps,on="Player",all.x=T)
   return(outputDF)
 }
 

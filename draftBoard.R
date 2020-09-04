@@ -6,6 +6,7 @@
 setwd("~/Documents/GitHub/fantasy-football-viz")
 library(shinydashboard)
 library(shiny)
+library(DT)
 source("fantasyProsScrape.R")
 source("vorp.R")
 
@@ -40,7 +41,12 @@ server <- function(input,output){
   playerProj = playerProj["FPTS" > 50.0]
   replVals = calculateReplacementValues(playerProj)
   playerProj$vorp = apply(playerProj,1,calculateVorp,replacementValues=replVals)
-  output$draftBoard = DT::renderDT(playerProj, filter="top")
+  #Add Vorp rankings and ADP to VORP differential
+  order.vorp = order(playerProj$vorp,decreasing = T)
+  playerProj$vorpRank[order.vorp] = 1:nrow(playerProj) 
+  playerProj$differential = playerProj$Rank - playerProj$vorpRank 
+  #Highlight high positive differentials
+  output$draftBoard = renderDT(datatable(playerProj)%>% formatStyle("differential",background = styleInterval(c(-5,5), c("red","white","green"))), filter="top" ) 
 }
 
 shinyApp(ui,server)
