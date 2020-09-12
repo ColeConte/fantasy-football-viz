@@ -12,7 +12,7 @@ Here's a short video I made on how to create a Yahoo Developer App without a red
 
 # Shiny App
 After getting connected to the API, I started out with a barebones Shiny App, pulling a couple of features from the ESPN API and using those to create an interactive table.
-![Basic UI](ShinyUI.png)
+![Basic UI](imgsMisc/ShinyUI.png)
 
 # Custom Metrics
 My first idea for a unique player metric was a simple VORP (Value Over Replacement Player) metric. I defined a replacement player as the worst starter by projected seasonal point total by position. With a 12 team league, that'd be the 12th best Tight End. I made a naive assumption that flex players would be split evenly between running backs and wide receivers, so in a 2WR/2RB/1FLEX league I set the replacement level player to be the 36th best RB and 36th best WR. This allowed me to see the value that top tier players had over their peers and tracked pretty well with the average draft position metric. It also confirmed an oft-repeated notion about quarterbacks; their overall points scored may be higher, but the variance of their scoring is less dramatic than other positions.
