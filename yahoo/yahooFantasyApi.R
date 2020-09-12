@@ -9,8 +9,8 @@ initialSetup <- function(){
   #Run this function when you're first connecting to the API. Otherwise the credentials should be saved already.
   #Read your developer keys from yahooCreds.txt
   options("httr_oob_default" = T)
-  cKey    = readLines("yahooCreds.txt", warn=FALSE)[1]
-  cSecret = readLines("yahooCreds.txt", warn=FALSE)[2]
+  cKey    = readLines("yahoo/yahooCreds.txt", warn=FALSE)[1]
+  cSecret = readLines("yahoo/yahooCreds.txt", warn=FALSE)[2]
   yahoo   = httr::oauth_endpoints("yahoo")
   myapp   = httr::oauth_app("yahoo", key=cKey, secret=cSecret)
   yahoo   = httr::oauth_endpoint(authorize ="https://api.login.yahoo.com/oauth2/request_auth", access = "https://api.login.yahoo.com/oauth2/get_token", base_url = "https://fantasysports.yahooapis.com")
@@ -49,6 +49,7 @@ requestAPI <- function(baseURL,leagueID,tag,gameKey){
 #Load saved authorization data, game key, and league IDs
 load(file = "Fantasy.RData")
 gameKey = getGameKey(yahoo_token)
+#Variables holding my league ids
 bdoe  = readLines("leagueIds.txt", warn=FALSE)[1]
 loeg  = readLines("leagueIds.txt", warn=FALSE)[2]
 
