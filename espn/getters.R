@@ -23,3 +23,5 @@ getADP <- function(playersDf, playerId){
   return (as.numeric(player$ownership$averageDraftPosition))
 }
 
+
+

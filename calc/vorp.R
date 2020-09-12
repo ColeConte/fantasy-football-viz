@@ -4,7 +4,7 @@
 calculateReplacementValues <- function(playerProj){
   #How do we choose the replacement level player?
   teams = 12
-  iterDf = data.frame(count = c(round(teams),round(teams*2),round(teams*3),round(teams),teams,teams),
+  iterDf = data.frame(count = c(round(teams),round(teams*2.5),round(teams*2.5),round(teams),teams,teams),
                       Pos = c("QB","RB","WR","TE","DST","K"), stringsAsFactors = F
                       )
   iterDf$replacement = apply(iterDf,1,getNthValue,pdf=playerProj)

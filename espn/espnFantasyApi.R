@@ -15,8 +15,8 @@ getPlayersData <- function(leagueID,isPublic){
   else{
     #Use saved cookies (espnCookies.txt) to log in
     #Get cookies from Chrome->Settings->Cookies and Other Site Data, under ESPN
-    cookies = c(`swid` = readLines("espnCookies.txt", warn=FALSE)[1],
-                 `espn_s2` =  readLines("espnCookies.txt", warn=FALSE)[2] )
+    cookies = c(`swid` = readLines("espn/espnCookies.txt", warn=FALSE)[1],
+                 `espn_s2` =  readLines("espn/espnCookies.txt", warn=FALSE)[2] )
     cookie = paste(names(cookies), cookies, sep = "=", collapse = ";")
     playersGet = httr::GET(url = url, config = httr::config(cookie = cookie))
   }

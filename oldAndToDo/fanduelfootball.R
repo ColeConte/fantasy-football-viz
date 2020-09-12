@@ -1,3 +1,7 @@
+#Cole Conte
+#fanduelfootball.R
+source("scrapers.r")
+
 if (!require(XML)) install.packages('XML')
 library(XML)
 if (!require(ggvis)) install.packages('ggvis')
@@ -5,63 +9,10 @@ library(ggvis)
 if (!require(shiny)) install.packages('shiny')
 library(shiny)
 
-espnprojections = data.frame("PLAYER, TEAM POS"=character(),
-                             "First.Name"=character(),
-                             "OPP"=character(), 
-                             "STATUS ET"=character(),
-                             "C/A" = character(),
-                             "PASSYDS" = double(),
-                             "PASSTD" = double(),
-                             "INT" = double(),
-                             "RUSH" = double(),
-                             "RUSHYDS" = double(),
-                             "RUSHTD" = double(),
-                             "REC" = double(),
-                             "RECYDS" = double(),
-                             "RECTD" = double(),
-                             "PTS" = double()) 
-for (row in seq(0,240,40)){
-  rows = {readHTMLTable(paste0("http://games.espn.go.com/ffl/tools/projections?&startIndex=",row), head=TRUE, as.data.frame=TRUE, stringsAsFactors=FALSE)$playertable_0}
-  rows = rows[-1,]
-  names(rows) <- c("PLAYER, TEAM POS", "OPP", "STATUS ET", "C/A", "PASSYDS", "PASSTD", "INT", "RUSH", "RUSHYDS", "RUSHTD", "REC", "RECYDS", "RECTD", "PTS")
-  rows["PASSYDS"] = lapply(rows["PASSYDS"],as.double)
-  rows["INT"] = lapply(rows["INT"],as.double)
-  rows["RUSH"] = lapply(rows["RUSH"],as.double)
-  rows["RUSHYDS"] = lapply(rows["RUSHYDS"],as.double)
-  rows["RUSHTD"] = lapply(rows["RUSHTD"],as.double)
-  rows["REC"] = lapply(rows["REC"],as.double)
-  rows["RECYDS"] = lapply(rows["RECYDS"],as.double)
-  rows["RECTD"] = lapply(rows["RECTD"],as.double)
-  rows["PTS"] = lapply(rows["PTS"],as.double)
-  rows["PTS"] = rows["PTS"] + 0.5*rows["REC"]         #Half PPR fanduel adjustment
-  espnprojections = rbind(espnprojections,rows)
-}
-fanduelprices = read.csv(file="FanDuel-NFL-2016-12-24-17365-players-list.csv",head=TRUE,sep=",",stringsAsFactors=FALSE)
-fanduelprices$Team[fanduelprices$Team=="BAL"] = "Bal"
-fanduelprices$Team[fanduelprices$Team=="CIN"] = "Cin"
-fanduelprices$Team[fanduelprices$Team=="CLE"] = "Cle"
-fanduelprices$Team[fanduelprices$Team=="PIT"] = "Pit"
-fanduelprices$Team[fanduelprices$Team=="HOU"] = "Hou"
-fanduelprices$Team[fanduelprices$Team=="IND"] = "Ind"
-fanduelprices$Team[fanduelprices$Team=="JAC"] = "Jax"
-fanduelprices$Team[fanduelprices$Team=="TEN"] = "Ten"
-fanduelprices$Team[fanduelprices$Team=="BUF"] = "Buf"
-fanduelprices$Team[fanduelprices$Team=="MIA"] = "Mia"
-fanduelprices$Team[fanduelprices$Team=="DEN"] = "Den"
-fanduelprices$Team[fanduelprices$Team=="OAK"] = "Oak"
-fanduelprices$Team[fanduelprices$Team=="CHI"] = "Chi"
-fanduelprices$Team[fanduelprices$Team=="DET"] = "Det"
-fanduelprices$Team[fanduelprices$Team=="MIN"] = "Min"
-fanduelprices$Team[fanduelprices$Team=="ATL"] = "Atl"
-fanduelprices$Team[fanduelprices$Team=="CAR"] = "Car"
-fanduelprices$Team[fanduelprices$Team=="DAL"] = "Dal"
-fanduelprices$Team[fanduelprices$Team=="PHI"] = "Phi"
-fanduelprices$Team[fanduelprices$Team=="WAS"] = "Was"
-fanduelprices$Team[fanduelprices$Team=="ARI"] = "Ari"
-fanduelprices$Team[fanduelprices$Team=="SEA"] = "Sea"
+loadEspnProjections()
 
-fanduelprices$Nickname = NULL
-fanduelprices$Id = NULL
+
+
 
 names(espnprojections)[names(espnprojections)=="PLAYER, TEAM POS"] = "Name"
 names = strsplit(espnprojections$Name, " ")

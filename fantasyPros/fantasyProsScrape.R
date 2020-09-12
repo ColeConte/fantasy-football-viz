@@ -15,6 +15,17 @@ getADP <- function(){
   return(adp)
 }
 
+getAuction <- function(){
+  #Get auction values from Fantasy Pros (couldn't scrape, put in CSV for now)
+  auctionValues = read.csv(file = 'data/auction952020.csv',stringsAsFactors = F)
+  auctionValues[,"Budget"] = sapply(auctionValues[,"Budget"], function(x) gsub("\\$","",x,perl=T))
+  auctionValues[,"Player"] = sapply(auctionValues[,"Name"], function(x) gsub(",","",x,perl=T))
+  drops = c("Name")
+  auctionValues = auctionValues[ , !(names(auctionValues) %in% drops)]
+  auctionValues[,"Budget"] = sapply(auctionValues[,"Budget"], as.numeric)
+  return(auctionValues)
+}
+
 scrapeProjections <- function(){
   #Do the scraping
   qbHTML = getURL("https://www.fantasypros.com/nfl/projections/qb.php")
@@ -55,7 +66,7 @@ scrapeProjections <- function(){
   DST = customProjections(DST,"DST")
   
   #Combine players into one dataframe
-  outputDF = rbind(QB[,c("Player","Pos","FPTS")],RB[,c("Player","Pos","FPTS")],WR[,c("Player","Pos","FPTS")],TE[,c("Player","Pos","FPTS")],DST[,c("Player","Pos","FPTS")],K[,c("Player","Pos","FPTS")])
+  outputDF = rbind(QB[,c("Player","Pos","FPTS")],RB[,c("Player","Pos","FPTS")],WR[,c("Player","Pos","FPTS")],TE[,c("Player","Pos","FPTS")])#,DST[,c("Player","Pos","FPTS")],K[,c("Player","Pos","FPTS")])
   
   #Add ons:
   #Add ADP
@@ -64,6 +75,11 @@ scrapeProjections <- function(){
   #Some values not merging: did a left outer join to keep all players.
   #FP list only goes for first 383. Didn't look like anyone else major was missing.
   outputDF = merge(outputDF,adps,on="Player",all.x=T)
+  
+  #Add Auction Values
+  auctionValues = getAuction()
+  auctionValues = auctionValues[,c("Budget","Player")]
+  outputDF = merge(outputDF,auctionValues,on="Player",all.x=T)
   return(outputDF)
 }
 
