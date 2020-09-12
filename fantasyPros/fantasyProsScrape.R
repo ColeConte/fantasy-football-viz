@@ -15,15 +15,15 @@ getADP <- function(){
   return(adp)
 }
 
-getAuction <- function(){
-  #Get auction values from Fantasy Pros (couldn't scrape, put in CSV for now)
-  auctionValues = read.csv(file = 'data/auction952020.csv',stringsAsFactors = F)
-  auctionValues[,"Budget"] = sapply(auctionValues[,"Budget"], function(x) gsub("\\$","",x,perl=T))
-  auctionValues[,"Player"] = sapply(auctionValues[,"Name"], function(x) gsub(",","",x,perl=T))
+getSalary <- function(){
+  #Get salary cap values from Fantasy Pros (couldn't scrape, put in CSV for now)
+  salaryValues = read.csv(file = 'data/auction952020.csv',stringsAsFactors = F)
+  salaryValues[,"Budget"] = sapply(salaryValues[,"Budget"], function(x) gsub("\\$","",x,perl=T))
+  salaryValues[,"Player"] = sapply(salaryValues[,"Name"], function(x) gsub(",","",x,perl=T))
   drops = c("Name")
-  auctionValues = auctionValues[ , !(names(auctionValues) %in% drops)]
-  auctionValues[,"Budget"] = sapply(auctionValues[,"Budget"], as.numeric)
-  return(auctionValues)
+  salaryValues = salaryValues[ , !(names(salaryValues) %in% drops)]
+  salaryValues[,"Budget"] = sapply(salaryValues[,"Budget"], as.numeric)
+  return(salaryValues)
 }
 
 scrapeProjections <- function(){
@@ -76,10 +76,13 @@ scrapeProjections <- function(){
   #FP list only goes for first 383. Didn't look like anyone else major was missing.
   outputDF = merge(outputDF,adps,on="Player",all.x=T)
   
-  #Add Auction Values
-  auctionValues = getAuction()
-  auctionValues = auctionValues[,c("Budget","Player")]
-  outputDF = merge(outputDF,auctionValues,on="Player",all.x=T)
+  #Add Salary Cap Values
+  salaryValues = getSalary()
+  salaryValues = salaryValues[,c("Budget","Player")]
+  outputDF = merge(outputDF,salaryValues,on="Player",all.x=T)
+  
+  #Factor Columns
+  outputDF$Pos = as.factor(outputDF$Pos)
   return(outputDF)
 }
 
