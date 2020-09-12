@@ -8,7 +8,7 @@ For privacy's sake, I didn't include the files with my league IDs, Yahoo develop
 
 Here's a short video I made on how to create a Yahoo Developer App without a redirect URI:
 
-[![Create A Yahoo Developer App Without A Redirect URI](YahooDevScreenshot.png)](https://www.youtube.com/watch?v=RDMRtdP6XSc)
+[![Create A Yahoo Developer App Without A Redirect URI](yahoo/YahooDevScreenshot.png)](https://www.youtube.com/watch?v=RDMRtdP6XSc)
 
 # Shiny App
 After getting connected to the API, I started out with a barebones Shiny App, pulling a couple of features from the ESPN API and using those to create an interactive table.
